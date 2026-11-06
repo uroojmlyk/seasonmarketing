@@ -4,10 +4,16 @@ import { useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { 
-  faArrowRight, faCircleCheck, faShieldHalved, 
-  faEnvelope, faLock, faHouse, faChevronDown, 
-  faUserShield, faXmark
+import {
+  faArrowRight,
+  faCircleCheck,
+  faShieldHalved,
+  faEnvelope,
+  faLock,
+  faHouse,
+  faChevronDown,
+  faUserShield,
+  faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import { validateIdentifier, validateOtp } from "@/features/auth/schemas/auth.schemas";
 import type { UserRole } from "@/features/auth/types/auth.types";
@@ -259,40 +265,38 @@ export default function SignInForm() {
         </button>
       </form>
 
-      {/* Demo Accounts Toggle */}
-      {process.env.NODE_ENV !== "production" && (
-        <div className="mt-4 border-t border-white/10 pt-3 sm:mt-5 sm:pt-4">
-          <button
-            type="button"
-            onClick={() => setShowDemo(!showDemo)}
-            className="flex w-full items-center justify-between text-[9px] font-bold uppercase tracking-wider text-neutral-400 transition hover:text-white sm:text-[10px]"
-          >
-            <span>Demo Accounts</span>
-            <FontAwesomeIcon icon={faChevronDown} className={`h-2.5 w-2.5 transition-transform sm:h-3 sm:w-3 ${showDemo ? "rotate-180" : ""}`} />
-          </button>
-          
-          {showDemo && (
-            <div className="mt-2 grid grid-cols-2 gap-1 sm:mt-3 sm:gap-1.5">
-              {DEMO_ACCOUNTS.map((a) => (
-                <button
-                  key={a.email}
-                  type="button"
-                  onClick={() => {
-                    setIdentifier(a.email);
-                    setPassword(DEMO_PASSWORD);
-                    setErrors({});
-                    setFormError("");
-                  }}
-                  className="flex w-full items-center gap-1 overflow-hidden rounded border border-white/5 bg-white/5 px-1.5 py-1 text-left text-[9px] font-medium text-neutral-400 transition hover:bg-white/10 hover:text-white sm:gap-1.5 sm:px-2 sm:py-1.5 sm:text-[10px]"
-                >
-                  <FontAwesomeIcon icon={faUserShield} className="h-2.5 w-2.5 shrink-0 text-brand-500 sm:h-3 sm:w-3" />
-                  <span className="truncate">{ROLE_LABELS[a.role]}</span>
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
+      {/* Demo Accounts Toggle — visible in ALL environments */}
+      <div className="mt-4 border-t border-white/10 pt-3 sm:mt-5 sm:pt-4">
+        <button
+          type="button"
+          onClick={() => setShowDemo(!showDemo)}
+          className="flex w-full items-center justify-between text-[9px] font-bold uppercase tracking-wider text-neutral-400 transition hover:text-white sm:text-[10px]"
+        >
+          <span>Demo Accounts</span>
+          <FontAwesomeIcon icon={faChevronDown} className={`h-2.5 w-2.5 transition-transform sm:h-3 sm:w-3 ${showDemo ? "rotate-180" : ""}`} />
+        </button>
+
+        {showDemo && (
+          <div className="mt-2 grid grid-cols-2 gap-1 sm:mt-3 sm:gap-1.5">
+            {DEMO_ACCOUNTS.map((a) => (
+              <button
+                key={a.email}
+                type="button"
+                onClick={() => {
+                  setIdentifier(a.email);
+                  setPassword(DEMO_PASSWORD);
+                  setErrors({});
+                  setFormError("");
+                }}
+                className="flex w-full items-center gap-1 overflow-hidden rounded border border-white/5 bg-white/5 px-1.5 py-1 text-left text-[9px] font-medium text-neutral-400 transition hover:bg-white/10 hover:text-white sm:gap-1.5 sm:px-2 sm:py-1.5 sm:text-[10px]"
+              >
+                <FontAwesomeIcon icon={faUserShield} className="h-2.5 w-2.5 shrink-0 text-brand-500 sm:h-3 sm:w-3" />
+                <span className="truncate">{ROLE_LABELS[a.role]}</span>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
