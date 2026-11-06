@@ -1,26 +1,205 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@theme {
+  --color-brand-50: #fff4ec;
+  --color-brand-100: #ffe5d0;
+  --color-brand-200: #ffc99f;
+  --color-brand-300: #ffa766;
+  --color-brand-400: #ff8533;
+  --color-brand-500: #ff6a00;
+  --color-brand-600: #e65c00;
+  --color-brand-700: #c24d00;
+  --color-ink: #0a0a0a;
+  --color-ink-soft: #141414;
+  --color-ink-card: #1c1c1c;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-float-slow: float 9s ease-in-out infinite;
+  --animate-glow: glow 5s ease-in-out infinite;
+  --animate-marquee: marquee 50s linear infinite;
+  --animate-kenburns: kenburns 22s ease-in-out infinite alternate;
+  --animate-scroll-dot: scroll-dot 1.8s ease-in-out infinite;
+  --animate-progress: progress 1.5s ease-in-out infinite;
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-16px); }
+  }
+  @keyframes glow {
+    0%, 100% { opacity: 0.35; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.12); }
+  }
+  @keyframes marquee {
+    to { transform: translateX(-50%); }
+  }
+  @keyframes kenburns {
+    from { transform: scale(1); }
+    to { transform: scale(1.1); }
+  }
+  @keyframes scroll-dot {
+    0% { opacity: 0; transform: translateY(0); }
+    30% { opacity: 1; }
+    100% { opacity: 0; transform: translateY(12px); }
+  }
+  @keyframes progress {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(200%); }
   }
 }
 
+html { scroll-behavior: smooth; }
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  color: #171717;
+  background: #ffffff;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.bg-grid {
+  background-image:
+    linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+/* Thin orange bar at the top that fills while you scroll (progressive enhancement) */
+.scroll-progress {
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: var(--color-brand-500);
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+  z-index: 60;
+}
+@supports (animation-timeline: scroll()) {
+  .scroll-progress {
+    animation: progress-fill linear both;
+    animation-timeline: scroll(root);
+  }
+}
+@keyframes progress-fill {
+  to { transform: scaleX(1); }
+}
+
+/* Headline word rotator: home / plot / shop / office */
+.word-rotator {
+  display: inline-block;
+  height: 1.15em;
+  overflow: hidden;
+  vertical-align: bottom;
+}
+.word-rotator__inner {
+  display: flex;
+  flex-direction: column;
+  animation: rotate-words 10s cubic-bezier(0.76, 0, 0.24, 1) infinite;
+}
+.word-rotator__inner > span {
+  display: block;
+  height: 1.15em;
+  line-height: 1.15em;
+  text-align: center;
+}
+@keyframes rotate-words {
+  0%, 22%   { transform: translateY(0); }
+  25%, 47%  { transform: translateY(-1.15em); }
+  50%, 72%  { transform: translateY(-2.3em); }
+  75%, 97%  { transform: translateY(-3.45em); }
+  100%      { transform: translateY(-4.6em); }
+}
+
+/* Cursor spotlight for cards (see SpotlightCard) */
+.spotlight > * { position: relative; }
+.spotlight::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 300ms ease;
+  background: radial-gradient(
+    420px circle at var(--mx, 50%) var(--my, 50%),
+    var(--spot, rgba(255, 106, 0, 0.16)),
+    transparent 60%
+  );
+}
+.spotlight:hover::before { opacity: 1; }
+
+/* Fine film grain on dark sections (add "grain" and "relative" to the section) */
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.08;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* =========================================
+   CUSTOM LEAFLET MAP STYLING
+   ========================================= */
+.leaflet-container {
+  background-color: #f3f4f6;
+  font-family: var(--font-sans) !important;
+}
+
+/* Default zoom buttons ko professional design dein */
+.leaflet-bar {
+  border: 1px solid #e5e7eb !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+  overflow: hidden;
+}
+.leaflet-bar a {
+  background-color: #ffffff !important;
+  color: #0a0a0a !important;
+  border-bottom: 1px solid #e5e7eb !important;
+  transition: background 0.2s;
+}
+.leaflet-bar a:hover {
+  background-color: #fff4ec !important;
+  color: #ff6a00 !important;
+}
+
+/* =========================================
+   CUSTOM MAP TOOLTIP (FLOATING MINI CARD)
+   ========================================= */
+.custom-map-tooltip {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  z-index: 999 !important;
+}
+
+/* Leaflet ke default arrow (teer) ko hata dein */
+.custom-map-tooltip::before {
+  display: none !important;
+}
+
+/* Tooltip ke andar wale card ko clickable banayein */
+.leaflet-tooltip-pane {
+  pointer-events: auto !important;
+}
+
+/* Progress bar animation (Success Screen) */
+.animate-progress {
+  animation: var(--animate-progress);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
 }
